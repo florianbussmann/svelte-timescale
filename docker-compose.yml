@@ -1,6 +1,8 @@
 services:
   backend:
     build: backend
+    depends_on:
+      - timescaledb
     ports:
       - "8000:8000"
     restart: unless-stopped
@@ -20,3 +22,10 @@ services:
       watch:
         - action: rebuild
           path: ./frontend/src
+  timescaledb:
+    image: timescale/timescaledb:latest-pg17
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=timescale
