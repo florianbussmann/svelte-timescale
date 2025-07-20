@@ -1,6 +1,18 @@
 services:
+  backend:
+    build: backend
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./backend/app
+          target: /app/app
   frontend:
     build: frontend
+    depends_on:
+      - backend
     ports:
       - "3000:3000"
     restart: unless-stopped
