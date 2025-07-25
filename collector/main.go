@@ -3,11 +3,13 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"math/rand"
 	"os"
 	"time"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/joho/godotenv"
 )
 
 // connect to database using a single connection
@@ -20,11 +22,16 @@ func main() {
 
 	r := rand.New(rand.NewSource(42)) // Custom seed
 
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
 	/***********************************************/
 	/* Single Connection to TimescaleDB/ PostgreSQL */
 	/***********************************************/
 	ctx := context.Background()
-	connStr := "postgres://postgres:password@localhost/timescale"
+	connStr := os.Getenv("DATABASE_CONNECTION_STRING")
 	conn, err := pgx.Connect(ctx, connStr)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
@@ -46,7 +53,7 @@ func main() {
 	/********************************************/
 	var data sensorData
 
-	data.DeviceId = "1"
+	data.DeviceId = os.Getenv("COLLECTOR_ID")
 	data.Timestamp = time.Now()
 	data.Value = r.Intn(100) // Random int between 0 and 99
 
